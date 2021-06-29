@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -27,6 +29,7 @@ public class TimeLineActivity extends AppCompatActivity {
     RecyclerView rvTweets;
     List<Tweet> tweets;
     TweetsAdapter adapter;
+    Button logOut_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,14 @@ public class TimeLineActivity extends AppCompatActivity {
         rvTweets.setAdapter(adapter);
 
         populateHomeTimeLine();
+
+        logOut_btn = findViewById(R.id.logOut_btn);
+        logOut_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onLogoutButton();
+            }
+        });
     }
     private void populateHomeTimeLine(){
         client.getHomeTimeLine(new JsonHttpResponseHandler() {
@@ -66,5 +77,11 @@ public class TimeLineActivity extends AppCompatActivity {
                 Log.e(TAG,"onFailure" + response, throwable);
             }
         });
+    }
+
+    // TimelineActivity.java
+    private void onLogoutButton() {
+        client.clearAccessToken(); // forget who's logged in
+        finish(); // navigate backwards to Login screen
     }
 }
