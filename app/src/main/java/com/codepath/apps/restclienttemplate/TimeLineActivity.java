@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -91,7 +92,9 @@ public class TimeLineActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.compose){
-            //Compose icon has been selected
+            //Compose icon has been selected, navigate to the compose activity
+            Intent intent = new Intent(this, ComposeActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
