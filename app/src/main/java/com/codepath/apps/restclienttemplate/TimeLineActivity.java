@@ -19,6 +19,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
@@ -88,6 +89,10 @@ public class TimeLineActivity extends AppCompatActivity {
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 JSONArray jsonArray = json.jsonArray;
                 try {
+                    //JSONObject jsonObject = json.jsonObject;
+                    //JSONObject results = json.jsonArray.;
+                    //Log.i("TimLineActivity", results.toString());
+                    //Log.i("TimeLineActivty", jsonObject.toString());
                     tweets.addAll(Tweet.fromJsonArray(jsonArray));
                     adapter.notifyDataSetChanged();
                     Log.e(TAG, json.toString());
@@ -169,6 +174,6 @@ public class TimeLineActivity extends AppCompatActivity {
 
             }
         });
-        
+
     }
 }
