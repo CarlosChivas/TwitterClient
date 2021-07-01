@@ -24,43 +24,19 @@ public class Tweet {
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
-        tweet.body = jsonObject.getString("text");
+        tweet.body = jsonObject.getString("full_text");
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
-        //JSONObject ejemplo = jsonObject.getJSONObject("entities");
-        Log.i("Json", jsonObject.toString());
-        try {
-            tweet.image = jsonObject.getJSONObject("entities").getJSONArray("media").getJSONObject(0).getString("media_url_https");
-            /*try {
-                JSONArray ejemplo2 = ejemplo.getJSONArray("media");
-                Log.i("Tweet", "Si tiene media...." + ejemplo2);
-                try{
-                    Log.i("FotodeTweet", "Foto: "+ejemplo2.getJSONObject(0).getString("media_url_https"));
-                }catch (JSONException e){
-                    Log.e("Tweet", "Algo malo");
-                }
-            }
-            catch (JSONException e){
-                Log.e("Tweet", "No tiene media");
-            }*/
-            Log.i("Losquetienenentities", "Si tiene entites: " + tweet.image);
+        JSONObject entities = jsonObject.getJSONObject("entities");
+        if(entities.has("media")){
+            JSONArray media = entities.getJSONArray("media");
+            tweet.image = media.getJSONObject(0).getString("media_url_https");
         }
-        catch (JSONException e){
-            Log.e("Tweet", "No tiene entities");
+        else{
+            tweet.image = "";
         }
 
-        try{
-            //JSONObject ejemplo3 = jsonObject.getJSONObject("extended_entities");
-            tweet.image = jsonObject.getJSONObject("extended_entities").getJSONArray("media").getJSONObject(0).getString("media_url_https");
-            Log.i("extended_entities", "Tambien tiene el extended_entities" + tweet.image);
-        }
-        catch (JSONException e){
-            Log.e("extended_entities", "Este no tiene el extende_entities");
-        }
 
-        //if(ejemplo.getJSONArray("media"))
-
-        //Log.d("Tweet", "fromJson: " + jsonObject.getJSONArray("media").toString());
 
         return tweet;
     }
