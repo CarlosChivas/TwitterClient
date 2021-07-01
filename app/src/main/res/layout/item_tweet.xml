@@ -44,13 +44,11 @@
 
     <ImageView
         android:id="@+id/image_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="162dp"
+        android:layout_height="183dp"
         android:layout_below="@+id/tvBody"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="11dp"
-        android:layout_marginEnd="169dp"
+        android:layout_centerInParent="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         tools:srcCompat="@tools:sample/avatars" />
 </RelativeLayout>

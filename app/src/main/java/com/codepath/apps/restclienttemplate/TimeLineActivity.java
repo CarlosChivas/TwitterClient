@@ -13,7 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toolbar;
 
+import com.codepath.apps.restclienttemplate.models.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
@@ -39,11 +41,14 @@ public class TimeLineActivity extends AppCompatActivity {
     TweetsAdapter adapter;
     Button logOut_btn;
     private SwipeRefreshLayout swipeContainer;
+    EndlessRecyclerViewScrollListener scrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_line);
+
+
 
         client = TwitterApp.getRestClient(this);
 
@@ -53,10 +58,26 @@ public class TimeLineActivity extends AppCompatActivity {
         tweets = new ArrayList<>();
         adapter = new TweetsAdapter(this, tweets);
         //Recycler view setup: layout manager and the adpater
-        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(manager);
         rvTweets.setAdapter(adapter);
 
-        populateHomeTimeLine();
+        scrollListener = new EndlessRecyclerViewScrollListener(manager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                //populateHomeTimeLine(page);
+                Log.i("Scroll", "Se agrego contenido");
+                //scrollListener.resetState();
+                loadMoreData();
+            }
+        };
+
+
+        rvTweets.addOnScrollListener(scrollListener);
+
+        populateHomeTimeLine(1);
 
         logOut_btn = findViewById(R.id.logOut_btn);
         logOut_btn.setOnClickListener(new View.OnClickListener() {
@@ -83,16 +104,34 @@ public class TimeLineActivity extends AppCompatActivity {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
     }
-    private void populateHomeTimeLine(){
-        client.getHomeTimeLine(new JsonHttpResponseHandler() {
+
+    private void loadMoreData() {
+        client.getNextPageOfTweets(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 JSONArray jsonArray = json.jsonArray;
                 try {
-                    //JSONObject jsonObject = json.jsonObject;
-                    //JSONObject results = json.jsonArray.;
-                    //Log.i("TimLineActivity", results.toString());
-                    //Log.i("TimeLineActivty", jsonObject.toString());
+                    List<Tweet> tweets = Tweet.fromJsonArray(jsonArray);
+                    adapter.addAll(tweets);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.e(TAG, "onFailure: loadMoreData" + response, throwable);
+            }
+        }, tweets.get(tweets.size() - 1).id);
+    }
+
+    private void populateHomeTimeLine(int index){
+        client.getHomeTimeLine(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                JSONArray jsonArray = json.jsonArray;
+
+                try {
                     tweets.addAll(Tweet.fromJsonArray(jsonArray));
                     adapter.notifyDataSetChanged();
                     Log.e(TAG, json.toString());
@@ -106,7 +145,7 @@ public class TimeLineActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG,"onFailure" + response, throwable);
             }
-        });
+        }, index);
     }
 
     @Override
@@ -173,7 +212,7 @@ public class TimeLineActivity extends AppCompatActivity {
                 Log.d("DEBUG", "Fetch timeline error: " + throwable.toString());
 
             }
-        });
+        }, 1);
 
     }
 }

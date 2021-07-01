@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+//import com.bumptech.glide.transformations;
+import com.bumptech.glide.request.target.Target;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +26,8 @@ import java.util.Locale;
 import java.text.SimpleDateFormat;
 
 import java.text.ParseException;
+
+import android.view.ViewGroup.LayoutParams;
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
 
@@ -81,12 +85,24 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvScreenName.setText(tweet.user.screenName);
             created_at.setText(timeAgo(tweet.createdAt));
             Glide.with(context).load(tweet.user.publicImageUrl).into(ivProfileImage);
-            if(!tweet.image.equals("")){
+
+            int margin = 0;
+            int radius = 100;
+            //Glide.with(context).load(tweet.user.profileImageUrl).transform(new RoundedCornersTransformation(radius, margin)).into(ivProfile);
+            //.transform(new RoundedCornersTransformation(radius, margin))
+            if(tweet.image != null){
                 Glide.with(context).load(tweet.image).into(image_content);
+                image_content.setVisibility(View.VISIBLE);
+            }else{
+                image_content.setVisibility(View.GONE);
+            }
+            /*
+            if(!tweet.image.equals("")){
+                Glide.with(context).load(tweet.image).override(100,100).into(image_content);
             }
             else{
-                Glide.with(context).load("").into(image_content);
-            }
+                image_content.setVisibility(View.GONE);
+            }*/
 
         }
     }

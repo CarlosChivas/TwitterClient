@@ -16,7 +16,8 @@ public class Tweet {
     public String body;
     public String createdAt;
     public User user;
-    public String image = "";
+    public String image = null;
+    public Long id;
 
 
     //Empty constructor needed by the parcerler library
@@ -24,16 +25,24 @@ public class Tweet {
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
-        tweet.body = jsonObject.getString("full_text");
+        if(jsonObject.has("full_text")){
+            tweet.body = jsonObject.getString("full_text");
+        }
+        else{
+            tweet.body = jsonObject.getString("text");
+        }
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         JSONObject entities = jsonObject.getJSONObject("entities");
+        tweet.id = jsonObject.getLong("id");
+
+
         if(entities.has("media")){
             JSONArray media = entities.getJSONArray("media");
             tweet.image = media.getJSONObject(0).getString("media_url_https");
         }
         else{
-            tweet.image = "";
+            tweet.image = null;
         }
 
 
