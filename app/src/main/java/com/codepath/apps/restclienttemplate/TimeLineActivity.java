@@ -1,22 +1,32 @@
 package com.codepath.apps.restclienttemplate;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RatingBar;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.codepath.apps.restclienttemplate.models.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -42,6 +52,10 @@ public class TimeLineActivity extends AppCompatActivity {
     Button logOut_btn;
     private SwipeRefreshLayout swipeContainer;
     EndlessRecyclerViewScrollListener scrollListener;
+
+    //New tweet window
+    AlertDialog.Builder dialogBuilder;
+    AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +159,7 @@ public class TimeLineActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG,"onFailure" + response, throwable);
             }
-        }, index);
+        });
     }
 
     @Override
@@ -158,12 +172,72 @@ public class TimeLineActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.compose){
-            //Compose icon has been selected, navigate to the compose activity
-            Intent intent = new Intent(this, ComposeActivity.class);
-            startActivityForResult(intent, REQUEST_CODE);
+            //Compose icon has been selected, navigate to the compose activity if we want to create a new activity
+            //Intent intent = new Intent(this, ComposeActivity.class);
+            //startActivityForResult(intent, REQUEST_CODE);
+
+            //Call a function to start a Custom View
+            newTweet();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void newTweet(){
+        dialogBuilder = new AlertDialog.Builder(this);
+        final View infoMovieView = getLayoutInflater().inflate(R.layout.activity_compose, null);
+
+        dialogBuilder.setView(infoMovieView);
+        dialog = dialogBuilder.create();
+        dialog.show();
+
+        client = TwitterApp.getRestClient(this);
+
+        final EditText etCompose;
+        Button btnTweet;
+        etCompose = infoMovieView.findViewById(R.id.etCompose);
+        btnTweet = infoMovieView.findViewById(R.id.btnTweet);
+
+        //Set click Listener on button
+        btnTweet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String tweetContent = etCompose.getText().toString();
+                if(tweetContent.isEmpty()){
+                    Toast.makeText(TimeLineActivity.this, "Sorry, your tweet cannot be empty", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                else if(tweetContent.length() > 280){
+                    Toast.makeText(TimeLineActivity.this, "Sorry, your tweet is too long", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                //Make an API call to Twitter to publish the tweet
+                client.publishTweet(tweetContent, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        Log.i(TAG, "onSuccess to publish tweet");
+                        try {
+                            Tweet tweet = Tweet.fromJson(json.jsonObject);
+                            Log.i(TAG, "Tweet published");
+                            tweets.add(0, tweet);
+                            //Update the adapter
+                            adapter.notifyItemInserted(0);
+                            //We go back to the beginning of the rv
+                            rvTweets.smoothScrollToPosition(0);
+                            //End compose window
+                            dialog.dismiss();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.e(TAG, "onFailure to publish tweet", throwable);
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -210,9 +284,8 @@ public class TimeLineActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.d("DEBUG", "Fetch timeline error: " + throwable.toString());
-
             }
-        }, 1);
+        });
 
     }
 }

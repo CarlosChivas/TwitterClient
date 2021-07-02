@@ -64,6 +64,8 @@ public class ComposeActivity extends AppCompatActivity {
                             setResult(RESULT_OK, intent);
                             //Closes the activity, pass data to parent
                             finish();
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
