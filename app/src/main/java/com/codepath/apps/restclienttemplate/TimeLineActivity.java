@@ -119,6 +119,7 @@ public class TimeLineActivity extends AppCompatActivity {
                 android.R.color.holo_red_light);
     }
 
+    //Load more data for continue scrolling
     private void loadMoreData() {
         client.getNextPageOfTweets(new JsonHttpResponseHandler() {
             @Override
@@ -131,7 +132,6 @@ public class TimeLineActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG, "onFailure: loadMoreData" + response, throwable);
@@ -139,12 +139,12 @@ public class TimeLineActivity extends AppCompatActivity {
         }, tweets.get(tweets.size() - 1).id);
     }
 
+    //Function for populate my TimeLine
     private void populateHomeTimeLine(int index){
         client.getHomeTimeLine(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 JSONArray jsonArray = json.jsonArray;
-
                 try {
                     tweets.addAll(Tweet.fromJsonArray(jsonArray));
                     adapter.notifyDataSetChanged();
@@ -240,6 +240,8 @@ public class TimeLineActivity extends AppCompatActivity {
         });
     }
 
+    //This function its called when we use a startActivityForResult, but we are using a custom view so it's unnecessary
+    /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
@@ -254,7 +256,7 @@ public class TimeLineActivity extends AppCompatActivity {
             rvTweets.smoothScrollToPosition(0);
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
+    }*/
 
     // TimelineActivity.java
     private void onLogoutButton() {
