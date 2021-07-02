@@ -45,7 +45,6 @@ public class TimeLineActivity extends AppCompatActivity {
     private final int REQUEST_CODE = 20;
 
     TwitterClient client;
-
     RecyclerView rvTweets;
     List<Tweet> tweets;
     TweetsAdapter adapter;
@@ -61,8 +60,6 @@ public class TimeLineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_line);
-
-
 
         client = TwitterApp.getRestClient(this);
 
@@ -88,11 +85,8 @@ public class TimeLineActivity extends AppCompatActivity {
             }
         };
 
-
         rvTweets.addOnScrollListener(scrollListener);
-
         populateHomeTimeLine(1);
-
         logOut_btn = findViewById(R.id.logOut_btn);
         logOut_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +106,7 @@ public class TimeLineActivity extends AppCompatActivity {
                 fetchTimelineAsync(0);
             }
         });
+
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -244,24 +239,16 @@ public class TimeLineActivity extends AppCompatActivity {
     /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
-        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
-            //Get data from the intent
-            Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
-            //Update the RV with the tweet
-            //Modify data source of tweets
-            tweets.add(0, tweet);
-            //Update the adapter
-            adapter.notifyItemInserted(0);
-            //We go back to the beginning of the rv
-            rvTweets.smoothScrollToPosition(0);
-        }
+        Code here...
         super.onActivityResult(requestCode, resultCode, data);
     }*/
 
     // TimelineActivity.java
     private void onLogoutButton() {
-        client.clearAccessToken(); // forget who's logged in
-        finish(); // navigate backwards to Login screen
+        // forget who's logged in
+        client.clearAccessToken();
+        // navigate backwards to Login screen
+        finish();
     }
 
     public void fetchTimelineAsync(int page) {

@@ -96,14 +96,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             }else{
                 image_content.setVisibility(View.GONE);
             }
-            /*
-            if(!tweet.image.equals("")){
-                Glide.with(context).load(tweet.image).override(100,100).into(image_content);
-            }
-            else{
-                image_content.setVisibility(View.GONE);
-            }*/
-
         }
     }
 
@@ -120,7 +112,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return relativeDate;
     }
 
@@ -135,6 +126,4 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         tweets.addAll(list);
         notifyDataSetChanged();
     }
-
-
 }

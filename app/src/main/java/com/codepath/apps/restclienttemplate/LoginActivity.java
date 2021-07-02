@@ -26,7 +26,6 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 		sampleModel.setName("CodePath");
 
 		sampleModelDao = ((TwitterApp) getApplicationContext()).getMyDatabase().sampleModelDao();
-
 		AsyncTask.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -34,7 +33,6 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 			}
 		});
 	}
-
 
 	// Inflate the menu; this adds items to the action bar if it is present.
 	@Override
