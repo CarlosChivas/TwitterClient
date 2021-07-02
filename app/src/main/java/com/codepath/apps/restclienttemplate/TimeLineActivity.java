@@ -7,10 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,21 +14,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RatingBar;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.codepath.apps.restclienttemplate.models.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.restclienttemplate.models.Tweet;
-import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +49,6 @@ public class TimeLineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_line);
-
         client = TwitterApp.getRestClient(this);
 
         //Find the recycler view
@@ -100,9 +88,7 @@ public class TimeLineActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
+                //Refresh the list
                 fetchTimelineAsync(0);
             }
         });
@@ -185,7 +171,6 @@ public class TimeLineActivity extends AppCompatActivity {
         dialogBuilder.setView(infoMovieView);
         dialog = dialogBuilder.create();
         dialog.show();
-
         client = TwitterApp.getRestClient(this);
 
         final EditText etCompose;
@@ -210,16 +195,15 @@ public class TimeLineActivity extends AppCompatActivity {
                 client.publishTweet(tweetContent, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Headers headers, JSON json) {
-                        Log.i(TAG, "onSuccess to publish tweet");
                         try {
                             Tweet tweet = Tweet.fromJson(json.jsonObject);
-                            Log.i(TAG, "Tweet published");
                             tweets.add(0, tweet);
                             //Update the adapter
                             adapter.notifyItemInserted(0);
                             //We go back to the beginning of the rv
                             rvTweets.smoothScrollToPosition(0);
                             //End compose window
+                            Toast.makeText(TimeLineActivity.this, "Tweet published", Toast.LENGTH_LONG).show();
                             dialog.dismiss();
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -253,8 +237,6 @@ public class TimeLineActivity extends AppCompatActivity {
 
     public void fetchTimelineAsync(int page) {
         // Send the network request to fetch the updated data
-        // `client` here is an instance of Android Async HTTP
-        // getHomeTimeline is an example endpoint.
         client.getHomeTimeLine(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {

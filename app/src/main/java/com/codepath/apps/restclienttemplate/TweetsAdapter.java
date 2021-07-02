@@ -2,8 +2,6 @@ package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
 import android.text.format.DateUtils;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.Transformation;
-import com.bumptech.glide.load.engine.Resource;
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-import com.bumptech.glide.load.resource.bitmap.BitmapResource;
 
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -32,8 +25,6 @@ import java.util.Locale;
 import java.text.SimpleDateFormat;
 
 import java.text.ParseException;
-
-import android.view.ViewGroup.LayoutParams;
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
 
@@ -91,9 +82,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvScreenName.setText(tweet.user.screenName);
             created_at.setText(timeAgo(tweet.createdAt));
             Glide.with(context).load(tweet.user.publicImageUrl).apply(RequestOptions.bitmapTransform(new RoundedCorners(20))).into(ivProfileImage);
-
-            //Glide.with(context).load(tweet.user.profileImageUrl).transform(new RoundedCornersTransformation(radius, margin)).into(ivProfile);
-            //.transform(new RoundedCornersTransformation(radius, margin))
             if(tweet.image != null){
                 Glide.with(context).load(tweet.image).apply(RequestOptions.bitmapTransform(new RoundedCorners(20))).into(image_content);
                 image_content.setVisibility(View.VISIBLE);
@@ -107,7 +95,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
         SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
         sf.setLenient(true);
-
         String relativeDate = "";
         try {
             long dateMillis = sf.parse(date).getTime();
